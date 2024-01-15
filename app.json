@@ -17,7 +17,7 @@
     "splash": {
       "image": "./src/assets/images/gifLogo.png",
       "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFF"
     },
     "assetBundlePatterns": [
       "**/*"
