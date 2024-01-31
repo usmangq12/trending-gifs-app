@@ -1,17 +1,15 @@
 import React from "react";
 import { ShareIcon } from "../assets/svgs/ShareIcon";
-import { Pressable, View } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
 import * as Sharing from "expo-sharing";
 import { Asset } from "expo-asset";
 import { GIF } from "../types";
 
-// Props interface declaration for the ShareGif component
 interface Props {
-  gif: GIF; // Expecting a GIF object as a prop
+  gif: GIF;
 }
 
 export const ShareGif: React.FC<Props> = ({ gif }) => {
-  // Constructing the URL of the GIF using the GIF's ID
   const gifUrl = `https://media1.giphy.com/media/${gif.id}/200.gif`;
 
   const handleShareGif = async () => {
@@ -30,8 +28,14 @@ export const ShareGif: React.FC<Props> = ({ gif }) => {
   };
 
   return (
-    <Pressable onPress={handleShareGif}>
-      <ShareIcon />
-    </Pressable>
+    <View style={styles.container}>
+      <Pressable onPress={handleShareGif}>
+        <ShareIcon />
+      </Pressable>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { backgroundColor: "black", padding: 10, borderRadius: 50 },
+});

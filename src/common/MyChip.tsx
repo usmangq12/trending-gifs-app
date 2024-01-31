@@ -14,7 +14,6 @@ const MyChip: React.FC<CommonChipProps> = ({
   onSelect,
   selected,
 }) => {
-
   const handlePress = () => {
     onSelect();
   };
@@ -26,10 +25,10 @@ const MyChip: React.FC<CommonChipProps> = ({
       style={{
         backgroundColor: selected ? "black" : "white",
         borderRadius: 20,
-        borderWidth: selected ? 1 : 0, // Border width when selected
+        borderWidth: selected ? 1 : 0,
       }}
       textStyle={{
-        color: selected ? "white" : "black", // Text color change on selection
+        color: selected ? "white" : "black",
       }}
     >
       {category}
