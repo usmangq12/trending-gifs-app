@@ -15,13 +15,14 @@ const MyChip: React.FC<CommonChipProps> = ({
   selected,
 }) => {
   const handlePress = () => {
-    onSelect();
+    console.log("onPress");
+  return   onSelect();
   };
 
   return (
     <Chip
       mode="flat"
-      onPress={handlePress}
+      onPress = {handlePress}
       style={{
         backgroundColor: selected ? "black" : "white",
         borderRadius: 20,

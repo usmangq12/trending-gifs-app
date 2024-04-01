@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -7,18 +7,19 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  TextInput,
+  Keyboard,
 } from "react-native";
-import CommonChip from "../common/MyChip";
-import { TextInput as PaperTextInput } from "react-native-paper";
-import { CrossIcon } from "../assets/svgs/CrossIcon";
-import { SearchIcon } from "../assets/svgs/SearchIcon";
-import { Icon } from "react-native-paper";
+import { IconButton, Icon } from "react-native-paper";
+
 import { Category } from "../types";
 import { categories } from "../utils";
+import CommonChip from "../common/MyChip";
 
 type Props = {
   onSelectGifCategory: (item: string) => void;
   selectedCategory: string;
+  setSelectedCategory: (value: string) => void;
 };
 
 if (
@@ -30,14 +31,17 @@ if (
 
 const CategoriesContainer: React.FC<Props> = ({
   onSelectGifCategory,
+  setSelectedCategory,
   selectedCategory,
 }) => {
   const [showInputField, setShowInputField] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  const inputRef = useRef<typeof PaperTextInput>(null);
-
   const handleChipSelect = (category: string) => {
-    onSelectGifCategory(category === selectedCategory ? "" : category);
+    if (category === selectedCategory) {
+      return;
+    }
+    onSelectGifCategory(category);
+    setInputValue("");
   };
 
   const renderItem = ({ item }: { item: Category }) => (
@@ -56,9 +60,6 @@ const CategoriesContainer: React.FC<Props> = ({
       },
     });
     setShowInputField(true);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
   };
 
   const closeInputField = () => {
@@ -68,12 +69,10 @@ const CategoriesContainer: React.FC<Props> = ({
         type: LayoutAnimation.Types.easeInEaseOut,
       },
     });
+
+    setSelectedCategory(inputValue);
     setShowInputField(false);
-    onSelectGifCategory(categories[0]);
-    clearInputField();
-    if (inputRef.current) {
-      inputRef.current.blur();
-    }
+    Keyboard.dismiss();
   };
 
   const handleInputChange = (text: string) => {
@@ -83,12 +82,13 @@ const CategoriesContainer: React.FC<Props> = ({
 
   const clearInputField = () => {
     setInputValue("");
+    onSelectGifCategory("");
   };
 
   return (
     <View style={styles.container}>
       {showInputField && (
-        <View style={{ marginRight: 5, marginTop: 5 }}>
+        <View style={{ marginRight: 8, marginTop: 5 }}>
           <Pressable onPress={closeInputField}>
             <View style={styles.arrowIcon}>
               <Icon source="arrow-left" color="#737373" size={24} />
@@ -96,49 +96,38 @@ const CategoriesContainer: React.FC<Props> = ({
           </Pressable>
         </View>
       )}
-      <PaperTextInput
-        ref={inputRef}
+      <TextInput
         placeholder="Search"
         onFocus={onInputPress}
         onBlur={closeInputField}
         value={inputValue}
         onChangeText={handleInputChange}
-        mode="outlined"
         style={{
           backgroundColor: "white",
-          borderRadius: 20,
-          width: showInputField ? "100%" : "auto",
+          borderRadius: 16,
+          width: showInputField ? "100%" : 100,
           height: 35,
           flex: showInputField ? 1 : 0,
           marginTop: 6,
           borderColor: "black",
+          paddingLeft: 8,
         }}
-        theme={{
-          roundness: 30,
-          colors: {
-            primary: "#a6a6a6",
-            background: "white",
-          },
-        }}
-        right={
-          showInputField ? (
-            <PaperTextInput.Icon
-              icon={() => (
-                <View style={styles.crossIcon}>
-                  <CrossIcon />
-                </View>
-              )}
-              onPress={clearInputField}
-            />
-          ) : null
-        }
-        left={
-          <PaperTextInput.Icon
-            style={{ marginLeft: 15 }}
-            icon={() => <SearchIcon color={"black"} />}
-          />
-        }
+        blurOnSubmit={false}
+        onSubmitEditing={closeInputField}
       />
+      {showInputField && (
+        <View
+          style={{
+            marginTop: 6,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 24,
+            width: 24,
+          }}
+        >
+          <IconButton icon="close" onPress={clearInputField}></IconButton>
+        </View>
+      )}
       {!showInputField && (
         <FlatList
           data={categories}
@@ -164,6 +153,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
+    gap: 4,
+    justifyContent: "center",
   },
   arrowIcon: {
     backgroundColor: "rgba(0, 0, 0, 0.1)",

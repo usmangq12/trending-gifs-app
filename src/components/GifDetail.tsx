@@ -52,7 +52,7 @@ export const GifDetail: React.FC<Props> = ({ gif, onBack, category }) => {
           <ShareGif gif={gif} />
         </View>
         <View>
-          <DownloadGif url={gif.images.fixed_height.mp4 as string} />
+        <DownloadGif url={gif.images.fixed_height.mp4 as string} />
         </View>
       </View>
     </SafeAreaView>

@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "react-native";
 import { MainScreen } from "./src/screens/MainScreen";
+import InputScreen from "./src/screens/InputScreen";
 
 const routes = [
   {
@@ -14,6 +15,15 @@ const routes = [
       headerTitle: "",
     },
   },
+  // {
+  //   name: "input",
+  //   headerTitle: "",
+  //   screen: InputScreen,
+  //   options: {
+  //     headerShown: false,
+  //     headerTitle: "",
+  //   },
+  // },
 ];
 
 const Stack = createNativeStackNavigator();

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSerachGifsQuery } from "../store/api";
 import { GifsList } from "../components/GifsList";
 import { GIF } from "../types";
@@ -10,41 +15,60 @@ import { useDebounce } from "../hooks/useDebounce";
 import { categories } from "../utils";
 
 export const MainScreen = () => {
-  // Using the auto-generated useSerachGifsQuery hook from RTK Query to avoid multiple API requests
-  // This hook is generated based on the configuration defined in api.ts
-  // It returns an object with data and loading status
-
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categories[0]
   );
-  const { debouncedValue } = useDebounce(selectedCategory, 500);
+  let { debouncedValue } = useDebounce(selectedCategory, 500);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const { data } = useSerachGifsQuery({
+  const { data, isLoading, isFetching } = useSerachGifsQuery({
     query: debouncedValue,
-    offset: currentPage * 25,
-    limit: 25,
+    offset: currentPage * 14,
+    limit: 14,
   });
+
   const [gifDetail, setGifDetail] = useState<GIF | null>(null);
+  const [mergedData, setMergedData] = useState<GIF[]>([]);
+  const [dataLoading, setDataLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  });
+    if (isFetching) {
+      setDataLoading(true);
+    } else {
+      setDataLoading(false);
+    }
+  }, [isFetching]);
 
-  const loadMoreData = async () => {
-    try {
+  useEffect(() => {
+    if (data) {
+      setMergedData((prevData) => {
+        return [...(prevData || []), ...data];
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+ 
+
+      setCurrentPage(0);
+      setMergedData([]);
+   
+  }, [selectedCategory]);
+
+  const handleEndReached = () => {
+    if (!dataLoading) {
       setCurrentPage((prevPage) => prevPage + 1);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading) {
+  const onSelectGifCategory = (item: string) => {
+    console.log("Item",item);
+    setSelectedCategory(item);
+  };
+
+  const handleRefreshRequest = () => {
+    setCurrentPage(0)
+  }
+  if (isLoading) {
     return <SplashScreen />;
   }
 
@@ -63,18 +87,20 @@ export const MainScreen = () => {
   if (data) {
     return (
       <SafeAreaView style={styles.container}>
-        <CategoriesContainer
-          onSelectGifCategory={(item: string) => {
-            setSelectedCategory(item);
-            setCurrentPage(1);
-          }}
-          selectedCategory={selectedCategory}
-        />
-        <GifsList
-          Gifs={data}
-          onSelectGifDetail={(item: GIF) => setGifDetail(item)}
-          handleEndReached={loadMoreData}
-        />
+        <View style={{ flex: 1 }}>
+          <CategoriesContainer
+            onSelectGifCategory={(item) => onSelectGifCategory(item)}
+            setSelectedCategory={setSelectedCategory}
+            selectedCategory={selectedCategory}
+          />
+          <GifsList
+            Gifs={mergedData}
+            onSelectGifDetail={(item: GIF) => setGifDetail(item)}
+            handleEndReached={handleEndReached}
+            isFetching={isFetching}
+            handleRefreshRequest={handleRefreshRequest}
+          />
+        </View>
       </SafeAreaView>
     );
   }
@@ -83,5 +109,8 @@ export const MainScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
 });
+
+export default MainScreen;

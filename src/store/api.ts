@@ -17,16 +17,16 @@ export const api: any = createApi({
       transformResponse: (response: any) => {
         return response.data;
       },
-      forceRefetch({ currentArg, previousArg }) {
-        return currentArg !== previousArg;
-      },
-      serializeQueryArgs: ({ endpointName }) => {
-        return endpointName;
-      },
-      merge: (currentState, incomingState) => {
-        const allGifs = [...currentState, ...incomingState];
-        return allGifs;
-      },
+      // forceRefetch({ currentArg, previousArg }) {
+      //   return currentArg !== previousArg;
+      // },
+      // serializeQueryArgs: ({ endpointName }) => {
+      //   return endpointName;
+      // },
+      // merge: (currentState, incomingState) => {
+      //   const allGifs = [...currentState, ...incomingState];
+      //   return allGifs;
+      // },
     }),
   }),
 });

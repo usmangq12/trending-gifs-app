@@ -1,48 +1,46 @@
 import React from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet, Alert } from "react-native";
 import { DownloadIcon } from "../assets/svgs/DownloadIcon";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import * as Location from "expo-location";
-import { Camera } from "expo-camera";
 
-interface props {
+interface Props {
   url: string;
 }
 
-export const DownloadGif: React.FC<props> = ({ url }) => {
+export const DownloadGif: React.FC<Props> = ({ url }) => {
+  console.log("uri of downloaded video ",url,);
   async function downloadFile() {
     try {
-      // Downloading the file
-      let fileLocation = FileSystem.documentDirectory + "test.mp4";
-      console.log("File Location", fileLocation);
-      const downloadedFile = await FileSystem.downloadAsync(url, fileLocation);
-      // Check if the download was successful
-      if (downloadedFile && downloadedFile.uri) {
-        const asset = await MediaLibrary.createAssetAsync(downloadedFile.uri);
-        // Saving the file in a folder named `MyImages`
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.log("Permission to access location was denied");
-          return;
-        }
-        if (status === "granted") {
-          FileSystem.getInfoAsync(downloadedFile.uri).then((res) => {
-            console.log("res ", res);
-            Camera.saveToCameraRoll(downloadedFile.uri, "photo");
-          });
-        }
-      } else {
-        console.error("Failed to download file.");
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Please grant permission to access media library."
+        );
+        return;
       }
-    } catch (error) {
-      console.error(error);
+
+      const fileUri = FileSystem.documentDirectory + "video.mp4";
+      const downloadResponse = await FileSystem.downloadAsync(url, fileUri);
+      if (downloadResponse.status !== 200) {
+        throw new Error("Failed to download the video.");
+      }
+
+      await MediaLibrary.saveToLibraryAsync(downloadResponse.uri);
+
+      Alert.alert(
+        "Download Complete",
+      );
+    } 
+    catch (error) {
+      Alert.alert("Download Error", "Failed to download the video.");
     }
   }
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={async () => await downloadFile()}>
+      <Pressable onPress={downloadFile}>
         <DownloadIcon />
       </Pressable>
     </View>
