@@ -16,7 +16,6 @@ export const ShareGif: React.FC<Props> = ({ gif }) => {
     try {
       const asset = Asset.fromURI(gifUrl);
       await asset.downloadAsync();
-     console.log("Asset",asset);
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(asset.localUri || "");
       } else {

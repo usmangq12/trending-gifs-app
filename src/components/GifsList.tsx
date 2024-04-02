@@ -83,7 +83,6 @@ export const GifsList: React.FC<GifsListProps> = ({
 
   const handleRefresh = () => {
     setIsRefresh(true);
-    console.log("Refreshing Props")
     handleRefreshRequest();
     setIsRefresh(false);
   }

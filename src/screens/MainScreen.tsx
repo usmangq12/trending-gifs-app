@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  ActivityIndicator,
   SafeAreaView,
   StyleSheet,
   View,
@@ -14,7 +13,9 @@ import { SplashScreen } from "../common/SplashScreen";
 import { useDebounce } from "../hooks/useDebounce";
 import { categories } from "../utils";
 
+
 export const MainScreen = () => {
+
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categories[0]
   );
@@ -47,11 +48,8 @@ export const MainScreen = () => {
   }, [data]);
 
   useEffect(() => {
- 
-
-      setCurrentPage(0);
-      setMergedData([]);
-   
+    setCurrentPage(0);
+    setMergedData([]);
   }, [selectedCategory]);
 
   const handleEndReached = () => {
@@ -61,13 +59,15 @@ export const MainScreen = () => {
   };
 
   const onSelectGifCategory = (item: string) => {
-    console.log("Item",item);
     setSelectedCategory(item);
+    setCurrentPage(0);
+    setMergedData([]);
   };
 
   const handleRefreshRequest = () => {
-    setCurrentPage(0)
-  }
+    setCurrentPage(0);
+  };
+
   if (isLoading) {
     return <SplashScreen />;
   }
@@ -77,7 +77,7 @@ export const MainScreen = () => {
       <SafeAreaView style={styles.container}>
         <GifDetail
           gif={gifDetail}
-          onBack={() => setGifDetail(null)}
+          onBack={() =>  setGifDetail(null)}
           category={selectedCategory}
         />
       </SafeAreaView>
