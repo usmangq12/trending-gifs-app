@@ -15,6 +15,7 @@ import { IconButton, Icon } from "react-native-paper";
 import { Category } from "../types";
 import { categories } from "../utils";
 import CommonChip from "../common/MyChip";
+import { SearchIcon } from "../assets/svgs/SearchIcon";
 
 type Props = {
   onSelectGifCategory: (item: string) => void;
@@ -69,10 +70,16 @@ const CategoriesContainer: React.FC<Props> = ({
         type: LayoutAnimation.Types.easeInEaseOut,
       },
     });
-
-    setSelectedCategory(inputValue);
     setShowInputField(false);
     Keyboard.dismiss();
+    if(inputValue) {
+      setSelectedCategory(inputValue);
+    }
+   else {
+    return setSelectedCategory(categories[0])
+   }
+    
+    
   };
 
   const handleInputChange = (text: string) => {
@@ -87,7 +94,9 @@ const CategoriesContainer: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      {showInputField && (
+      
+     <View style={{flexDirection:"row",position:"relative",justifyContent:"center",alignItems:"center"}}>
+     {showInputField && (
         <View style={{ marginRight: 8, marginTop: 5 }}>
           <Pressable onPress={closeInputField}>
             <View style={styles.arrowIcon}>
@@ -96,7 +105,11 @@ const CategoriesContainer: React.FC<Props> = ({
           </Pressable>
         </View>
       )}
-      <TextInput
+      <View style={{position:"absolute",backgroundColor:"transparent",left:showInputField ? 44 : 6,top:12,zIndex:23,width:22,height:22}}>
+      <SearchIcon width={18} height={18} color="grey"/>
+      </View>
+     {/* <IconButton onPress={null} disabled = {true} rippleColor = "white" iconColor="" style={{position:"absolute",backgroundColor:"transparent",left:showInputField ? 40 : 2,top:6,zIndex:23,width:22,height:22}} icon="magnify" onPress={clearInputField}></IconButton> */}
+     <TextInput
         placeholder="Search"
         onFocus={onInputPress}
         onBlur={closeInputField}
@@ -105,17 +118,17 @@ const CategoriesContainer: React.FC<Props> = ({
         style={{
           backgroundColor: "white",
           borderRadius: 16,
-          width: showInputField ? "100%" : 100,
+          width: showInputField ? "auto" : 100,
           height: 35,
           flex: showInputField ? 1 : 0,
           marginTop: 6,
           borderColor: "black",
-          paddingLeft: 8,
+          paddingLeft: 34,
         }}
         blurOnSubmit={false}
         onSubmitEditing={closeInputField}
       />
-      {showInputField && (
+        {showInputField && (
         <View
           style={{
             marginTop: 6,
@@ -127,7 +140,9 @@ const CategoriesContainer: React.FC<Props> = ({
         >
           <IconButton icon="close" onPress={clearInputField}></IconButton>
         </View>
-      )}
+      )} 
+     </View>
+      
       {!showInputField && (
         <FlatList
           data={categories}

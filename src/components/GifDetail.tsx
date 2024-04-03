@@ -6,6 +6,7 @@ import {
   Text,
   Pressable,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { GIF } from "../types";
 import { CreatorInfoCard } from "./CreatorInfoCard";
@@ -28,33 +29,35 @@ export const GifDetail: React.FC<Props> = ({ gif, onBack, category }) => {
         </Pressable>
         <Text style={styles.headingText}>Gif</Text>
       </View>
-      <View>
-        {gif?.user && (
+      <ScrollView contentContainerStyle={{ gap: 12 }}>
+        <View>
+          {gif?.user && (
+            <View>
+              <CreatorInfoCard gifDetail={gif} category={category} />
+            </View>
+          )}
+        </View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.imgStyle}
+            source={{ uri: gif.images.fixed_height.webp }}
+          />
+        </View>
+        <View>
+          <Text style={styles.titleText}>{gif.title}</Text>
+        </View>
+        <View>
+          <TrendingDetailCard date={gif.trending_datetime} />
+        </View>
+        <View style={styles.iconContainer}>
           <View>
-            <CreatorInfoCard gifDetail={gif} category={category} />
+            <ShareGif gif={gif} />
           </View>
-        )}
-      </View>
-      <View style={styles.imageContainer}>
-        <Image
-          style={styles.imgStyle}
-          source={{ uri: gif.images.fixed_height.webp }}
-        />
-      </View>
-      <View>
-        <Text style={styles.titleText}>{gif.title}</Text>
-      </View>
-      <View>
-        <TrendingDetailCard date={gif.trending_datetime} />
-      </View>
-      <View style={styles.iconContainer}>
-        <View>
-          <ShareGif gif={gif} />
+          <View>
+            <DownloadGif url={gif.images.fixed_height.mp4 as string} />
+          </View>
         </View>
-        <View>
-        <DownloadGif url={gif.images.fixed_height.mp4 as string} />
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -84,6 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "black",
     fontWeight: "800",
+    marginTop: 6,
   },
   imgStyle: { width: "100%", height: 400 },
   imageContainer: {

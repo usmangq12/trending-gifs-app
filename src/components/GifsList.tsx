@@ -1,24 +1,19 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Image,
-  Pressable,
-  View,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { StyleSheet, Image, Pressable, View, ActivityIndicator, FlatList } from "react-native";
 import { GIF } from "../types";
 import ShimmmerPlaceholer from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface GifItemProps {
   gif: GIF;
-  onSelectGifDetail: (item: GIF) => void;
+  onSelectGifDetail: (item: GIF, index: number) => void;
+  index: number;
 }
 
-const GifItem: React.FC<GifItemProps> = ({ gif, onSelectGifDetail }) => {
+const GifItem: React.FC<GifItemProps> = ({ gif, onSelectGifDetail, index }) => {
   const [loading, setLoading] = useState(true);
   const [showProgressbar, setShowProgressbar] = useState(false);
+  
   const handleLoadStart = () => {
     setLoading(true);
   };
@@ -32,20 +27,20 @@ const GifItem: React.FC<GifItemProps> = ({ gif, onSelectGifDetail }) => {
     <Pressable
       style={styles.buttonStyle}
       onPress={() => {
-        onSelectGifDetail(gif);
+        onSelectGifDetail(gif, index);
       }}
     >
       {loading && (
         <ShimmmerPlaceholer
           LinearGradient={LinearGradient}
           location={null}
-          shimmerStyle={[styles.shimmer,{height: 100}]}
+          shimmerStyle={[styles.shimmer, { height: 100 }]}
           shimmerColors={["#B8B8B8", "#B0B0B0"]}
           duration={2000}
           isReversed={true}
         />
       )}
-       <Image
+      <Image
         source={{ uri: gif.images.fixed_height.webp }}
         style={{ width: "100%", height: 100 }}
         onLoadStart={handleLoadStart}
@@ -57,10 +52,13 @@ const GifItem: React.FC<GifItemProps> = ({ gif, onSelectGifDetail }) => {
 
 interface GifsListProps {
   Gifs: GIF[];
-  onSelectGifDetail: (item: GIF) => void;
+  onSelectGifDetail: (item: GIF, index: number) => void;
   handleEndReached: () => void;
   isFetching: boolean;
-  handleRefreshRequest:()=>void;
+  handleRefreshRequest: () => void;
+  scrollToIndex: any;
+  handleScroll: any;
+  scrollPosition: number; // Added scrollPosition prop
 }
 
 export const GifsList: React.FC<GifsListProps> = ({
@@ -68,43 +66,58 @@ export const GifsList: React.FC<GifsListProps> = ({
   onSelectGifDetail,
   handleEndReached,
   isFetching,
-  handleRefreshRequest
+  handleRefreshRequest,
+  scrollToIndex,
+  handleScroll,
+  scrollPosition // Added scrollPosition prop
 }) => {
-  const [isRefresh,setIsRefresh] = useState(false);
-  const Footer = () => {
-    {
-      return isFetching ? (
-        <View style={styles.footer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      ) : null;
+  const [isRefresh, setIsRefresh] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
+  console.log("Scroll Position in the container",scrollPosition)
+  useEffect(() => {
+       console.log("scrollPosition**",scrollPosition);
+    if (flatListRef.current && scrollPosition !== null) {
+      flatListRef.current.getNativeScrollRef({ offset: scrollPosition, animated: false });
     }
+  }, []);
+
+  const Footer = () => {
+    return isFetching ? (
+      <View style={styles.footer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    ) : null;
   };
 
   const handleRefresh = () => {
     setIsRefresh(true);
     handleRefreshRequest();
     setIsRefresh(false);
-  }
+  };
+
+  const handleScrollEvent = (event: any) => {
+    handleScroll(event);
+  };
 
   return (
     <View style={styles.listContainer}>
       <FlatList
+        ref={flatListRef}
+        onScroll={(event) => handleScrollEvent(event)}
         data={Gifs.map((item, index) => ({
           ...item,
           id: `${item.id}-${index.toString()}`,
         }))}
         keyExtractor={(item) => item.id}
-        // getItemLayout={getItemLayout}
         numColumns={2}
         refreshing={isRefresh}
-        onRefresh = {handleRefresh}
+        onRefresh={handleRefresh}
         style={styles.list}
         initialNumToRender={14}
-        columnWrapperStyle={{ gap: 6 }} // Increased gap between items
+        columnWrapperStyle={{ gap: 6 }}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }: any) => {
-          return <GifItem gif={item} onSelectGifDetail={onSelectGifDetail} />;
+        renderItem={({ item, index }: any) => {
+          return <GifItem gif={item} index={index} onSelectGifDetail={onSelectGifDetail} />;
         }}
         onEndReached={handleEndReached}
         ListFooterComponent={Footer}
@@ -112,8 +125,6 @@ export const GifsList: React.FC<GifsListProps> = ({
     </View>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   listContainer: {
@@ -129,14 +140,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     position: "relative",
   },
-  loadingIndicator: {
-    marginTop: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#b8b8b8",
-    maxHeight: 50,
-    padding: 6,
-  },
   footer: {
     marginTop: 24,
     justifyContent: "center",
@@ -144,12 +147,11 @@ const styles = StyleSheet.create({
     maxHeight: 50,
     backgroundColor: "transparent",
   },
-  shimmer : {
-      position: "absolute",
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    
-  }
+  shimmer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
 });
