@@ -10,12 +10,14 @@ import {
   TextInput,
   Keyboard,
 } from "react-native";
-import { IconButton, Icon } from "react-native-paper";
+
+import { Icon } from "react-native-paper";
 
 import { Category } from "../types";
 import { categories } from "../utils";
 import CommonChip from "../common/MyChip";
 import { SearchIcon } from "../assets/svgs/SearchIcon";
+import { CrossIcon } from "../assets/svgs/CrossIcon";
 
 type Props = {
   onSelectGifCategory: (item: string) => void;
@@ -37,6 +39,7 @@ const CategoriesContainer: React.FC<Props> = ({
 }) => {
   const [showInputField, setShowInputField] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
+
   const handleChipSelect = (category: string) => {
     if (category === selectedCategory) {
       return;
@@ -55,7 +58,7 @@ const CategoriesContainer: React.FC<Props> = ({
 
   const onInputPress = () => {
     LayoutAnimation.configureNext({
-      duration: 400,
+      duration: 200,
       update: {
         type: LayoutAnimation.Types.easeInEaseOut,
       },
@@ -72,18 +75,18 @@ const CategoriesContainer: React.FC<Props> = ({
     });
     setShowInputField(false);
     Keyboard.dismiss();
-    if(inputValue) {
+    if (inputValue) {
       setSelectedCategory(inputValue);
+    } else {
+      return setSelectedCategory(categories[0]);
     }
-   else {
-    return setSelectedCategory(categories[0])
-   }
-    
-    
   };
 
   const handleInputChange = (text: string) => {
     setInputValue(text);
+    if (!text) {
+      Keyboard.dismiss();
+    }
     onSelectGifCategory(text);
   };
 
@@ -94,55 +97,42 @@ const CategoriesContainer: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      
-     <View style={{flexDirection:"row",position:"relative",justifyContent:"center",alignItems:"center"}}>
-     {showInputField && (
-        <View style={{ marginRight: 8, marginTop: 5 }}>
-          <Pressable onPress={closeInputField}>
-            <View style={styles.arrowIcon}>
-              <Icon source="arrow-left" color="#737373" size={24} />
-            </View>
-          </Pressable>
-        </View>
-      )}
-      <View style={{position:"absolute",backgroundColor:"transparent",left:showInputField ? 44 : 6,top:12,zIndex:23,width:22,height:22}}>
-      <SearchIcon width={18} height={18} color="grey"/>
-      </View>
-     {/* <IconButton onPress={null} disabled = {true} rippleColor = "white" iconColor="" style={{position:"absolute",backgroundColor:"transparent",left:showInputField ? 40 : 2,top:6,zIndex:23,width:22,height:22}} icon="magnify" onPress={clearInputField}></IconButton> */}
-     <TextInput
-        placeholder="Search"
-        onFocus={onInputPress}
-        onBlur={closeInputField}
-        value={inputValue}
-        onChangeText={handleInputChange}
-        style={{
-          backgroundColor: "white",
-          borderRadius: 16,
-          width: showInputField ? "auto" : 100,
-          height: 35,
-          flex: showInputField ? 1 : 0,
-          marginTop: 6,
-          borderColor: "black",
-          paddingLeft: 34,
-        }}
-        blurOnSubmit={false}
-        onSubmitEditing={closeInputField}
-      />
+      <View style={styles.inputContainer}>
         {showInputField && (
-        <View
-          style={{
-            marginTop: 6,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 24,
-            width: 24,
-          }}
-        >
-          <IconButton icon="close" onPress={clearInputField}></IconButton>
+          <View style={{ marginRight: 8, marginTop: 5 }}>
+            <Pressable onPress={closeInputField}>
+              <View style={styles.arrowIcon}>
+                <Icon source="arrow-left" color="#737373" size={24} />
+              </View>
+            </Pressable>
+          </View>
+        )}
+        <View style={[styles.search, { left: showInputField ? 44 : 6 }]}>
+          <SearchIcon width={18} height={18} color="grey" />
         </View>
-      )} 
-     </View>
-      
+        <TextInput
+          placeholder="Search"
+          onFocus={onInputPress}
+          onBlur={closeInputField}
+          value={inputValue}
+          onChangeText={handleInputChange}
+          style={[
+            styles.input,
+            {
+              width: showInputField ? "auto" : 100,
+              flex: showInputField ? 1 : 0,
+            },
+          ]}
+          blurOnSubmit={false}
+          onSubmitEditing={closeInputField}
+        />
+        {showInputField && (
+          <Pressable style={styles.cross} onPress={clearInputField}>
+            <CrossIcon />
+          </Pressable>
+        )}
+      </View>
+
       {!showInputField && (
         <FlatList
           data={categories}
@@ -179,5 +169,38 @@ const styles = StyleSheet.create({
   crossIcon: {
     backgroundColor: "rgba(0, 0, 0, 0.1)",
     borderRadius: 50,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    position: "relative",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  search: {
+    position: "absolute",
+    backgroundColor: "transparent",
+
+    top: 12,
+    zIndex: 23,
+    width: 22,
+    height: 22,
+  },
+  input: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    height: 35,
+    marginTop: 6,
+    borderColor: "black",
+    paddingLeft: 34,
+  },
+  cross: {
+    marginTop: 6,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    right: 8,
+    top: 10,
+    width: 16,
+    height: 16,
   },
 });
