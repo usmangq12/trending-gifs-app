@@ -14,8 +14,9 @@
       "distribution": "internal"
     },
     "production": {
-     
-    
+      "extends": "base",
+      "channel": "production",
+      "env": {}
     }
   },
   "submit": {
