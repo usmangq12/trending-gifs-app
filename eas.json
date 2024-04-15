@@ -14,9 +14,12 @@
       "distribution": "internal"
     },
     "production": {
-      "extends": "base",
-      "channel": "production",
-      "env": {}
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      }
     }
   },
   "submit": {
