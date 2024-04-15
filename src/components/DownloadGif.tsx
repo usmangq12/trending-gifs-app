@@ -9,8 +9,7 @@ interface Props {
 }
 
 export const DownloadGif: React.FC<Props> = ({ url }) => {
-  console.log("uri of downloaded video ",url,);
-  async function downloadFile() {
+async function downloadFile() {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {

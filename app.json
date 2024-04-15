@@ -6,7 +6,13 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
-      ]
+      ],
+     [ "expo-build-properties",
+      {
+        "ios": {
+          "deploymentTarget": "13.4"
+        }
+      }]
     ],
     "name": "trending-gifs-app",
     "slug": "trending-gifs-app",
@@ -23,16 +29,27 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "yes"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.usmangq.trendinggifsapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8a3076ea-2c7a-460f-8cb7-447e03f151b5"
+      }
     }
   }
 }

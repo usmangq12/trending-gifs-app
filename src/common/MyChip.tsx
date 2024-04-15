@@ -15,7 +15,6 @@ const MyChip: React.FC<CommonChipProps> = ({
   selected,
 }) => {
   const handlePress = () => {
-    console.log("onPress");
   return   onSelect();
   };
 
