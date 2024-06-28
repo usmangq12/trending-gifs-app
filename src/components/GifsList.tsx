@@ -42,7 +42,7 @@ const GifItem: React.FC<GifItemProps> = ({ gif, onSelectGifDetail, index }) => {
       {loading && (
         <ShimmmerPlaceholer
           LinearGradient={LinearGradient}
-          location={null}
+          location={undefined}
           shimmerStyle={[styles.shimmer, { height: 100 }]}
           shimmerColors={["#B8B8B8", "#B0B0B0"]}
           duration={2000}
